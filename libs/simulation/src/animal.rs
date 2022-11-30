@@ -11,11 +11,11 @@ pub struct Animal {
     pub(crate) speed: f32,
     pub(crate) eye: Eye,
     pub(crate) brain: nn::Network,
+    pub(crate) satiation: usize,
 }
 
 impl Animal {
     pub fn random(rng: &mut dyn RngCore) -> Self {
-        
         let eye = Eye::default();
 
         let brain = nn::Network::random(
@@ -32,7 +32,6 @@ impl Animal {
                 nn::LayerTopology {
                     neurons: eye.cells(),
                 },
-
                 // The Hidden Layer
                 //
                 // There is no best answer as to "how many neurons
@@ -46,7 +45,6 @@ impl Animal {
                 nn::LayerTopology {
                     neurons: 2 * eye.cells(),
                 },
-
                 // The Output Layer
                 //
                 // Since the brain will control our bird's speed and
@@ -65,6 +63,7 @@ impl Animal {
             speed: 0.002,
             eye,
             brain,
+            satiation: 0,
         }
     }
 

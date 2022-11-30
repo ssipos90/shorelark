@@ -1,11 +1,11 @@
 mod chromosome;
-mod selection;
 mod mutation;
+mod selection;
 
-use chromosome::Individual;
-use mutation::MutationMethod;
 use rand::RngCore;
-use selection::{CrossoverMethod, SelectionMethod};
+pub use chromosome::{Chromosome, Individual};
+pub use mutation::{GaussianMutation, MutationMethod};
+pub use selection::{CrossoverMethod, RouletteWheelSelection, SelectionMethod, UniformCrossover};
 
 pub struct GeneticAlgorithm<S> {
     selection_method: S,

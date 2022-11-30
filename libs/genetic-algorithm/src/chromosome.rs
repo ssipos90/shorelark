@@ -227,7 +227,7 @@ mod tests {
 
             let ga = GeneticAlgorithm::new(
                 RouletteWheelSelection::new(),
-                UniformCrossover::new(),
+                UniformCrossover,
                 GaussianMutation::new(0.5, 0.5),
             );
 

@@ -13,6 +13,15 @@ pub struct Network {
 }
 
 impl Network {
+    #[cfg(test)]
+    fn new(layers: Vec<Layer>) -> Self {
+        Self { layers }
+    }
+
+    // pub fn from_weights(layers: &[LayerTopology], weights: impl IntoIterator<Item = 32>) -> Self {
+    //     todo!()
+    // }
+
     pub fn random(rng: &mut dyn RngCore, layers: &[LayerTopology]) -> Self {
         Self {
             layers: layers
@@ -32,6 +41,16 @@ impl Network {
             .iter()
             .fold(inputs, |inputs, layer| layer.propagate(inputs))
     }
+
+    pub fn weights(&self) -> Vec<f32> {
+        use std::iter::once;
+        self.layers
+            .iter()
+            .flat_map(|layer| layer.neurons.iter())
+            .flat_map(|neuron| once(&neuron.bias).chain(&neuron.weights))
+            .copied()
+            .collect()
+    }
 }
 
 /********************
@@ -44,6 +63,11 @@ struct Layer {
 }
 
 impl Layer {
+    #[cfg(test)]
+    fn new(neurons: Vec<Neuron>) -> Self {
+        Self { neurons }
+    }
+
     fn random(rng: &mut dyn RngCore, input_neurons: usize, output_neurons: usize) -> Self {
         Self {
             neurons: (0..output_neurons)
@@ -70,6 +94,11 @@ struct Neuron {
 }
 
 impl Neuron {
+    #[cfg(test)]
+    fn new(bias: f32, weights: Vec<f32>) -> Self {
+        Self { bias, weights }
+    }
+
     fn random(rng: &mut dyn RngCore, input_neurons: usize) -> Self {
         Self {
             bias: rng.gen_range(-1.0..=1.0),
@@ -110,7 +139,18 @@ mod tests {
                     LayerTopology { neurons: 3 },
                 ],
             );
-            assert_eq!(3, network.layers.len());
+            assert_eq!(network.layers.len(), 2);
+        }
+
+        #[test]
+        fn test_weigths() {
+            let network = Network::new(vec![
+                Layer::new(vec![Neuron::new(0.1, vec![0.2, 0.3, 0.4])]),
+                Layer::new(vec![Neuron::new(0.5, vec![0.6, 0.7, 0.8])]),
+            ]);
+            let actual = network.weights();
+            let expected = vec![0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8];
+            approx::assert_relative_eq!(actual.as_slice(), expected.as_slice());
         }
     }
 
@@ -121,15 +161,15 @@ mod tests {
             let mut rng = ChaCha8Rng::from_seed(Default::default());
             let layer = Layer::random(&mut rng, 3, 2);
 
-            approx::assert_relative_eq!(-0.6255188, layer.neurons[0].bias);
+            approx::assert_relative_eq!(layer.neurons[0].bias, -0.6255188);
             approx::assert_relative_eq!(
+                layer.neurons[0].weights.as_slice(),
                 [0.67383957, 0.8181262, 0.26284897].as_ref(),
-                layer.neurons[0].weights.as_slice()
             );
-            approx::assert_relative_eq!(0.5238807, layer.neurons[1].bias);
+            approx::assert_relative_eq!(layer.neurons[1].bias, 0.5238807);
             approx::assert_relative_eq!(
+                layer.neurons[1].weights.as_slice(),
                 [-0.53516835, 0.069369674, -0.7648182].as_ref(),
-                layer.neurons[1].weights.as_slice()
             );
         }
     }
@@ -146,10 +186,10 @@ mod tests {
             let mut rng = ChaCha8Rng::from_seed(Default::default());
             let neuron = Neuron::random(&mut rng, 4);
 
-            approx::assert_relative_eq!(neuron.bias, -0.6255188);
+            approx::assert_relative_eq!(-0.6255188, neuron.bias);
             approx::assert_relative_eq!(
+                neuron.weights.as_slice(),
                 [0.67383957, 0.8181262, 0.26284897, 0.5238807].as_ref(),
-                neuron.weights.as_slice()
             );
         }
     }
