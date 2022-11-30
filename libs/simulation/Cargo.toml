@@ -8,3 +8,7 @@ edition = "2021"
 [dependencies]
 nalgebra = { version = "0.31", features = ["rand-no-std"] }
 rand = "0.8.5"
+lib-neural-network = { path = "../neural-network" }
+
+[dev-dependencies]
+test-case = "2.2.2"

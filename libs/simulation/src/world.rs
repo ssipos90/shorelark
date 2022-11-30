@@ -1,4 +1,4 @@
-use rand::{Rng, RngCore};
+use rand::RngCore;
 use crate::{animal::Animal, food::Food};
 
 #[derive(Debug)]

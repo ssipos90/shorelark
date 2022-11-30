@@ -15,7 +15,7 @@ const ctxt = viewport.getContext('2d');
 
 // Automatically scales all operations by `viewportScale` - otherwise
 // we'd have to `* viewportScale` everything by hand
-ctxt.scale(viewportScale, viewportScale);
+// ctxt.scale(viewportScale, viewportScale);
 
 // Rest of the code follows without any changes
 ctxt.fillStyle = 'rgb(0, 0, 0)';

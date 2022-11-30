@@ -7,12 +7,13 @@ pub struct LayerTopology {
     pub neurons: usize,
 }
 
+#[derive(Debug)]
 pub struct Network {
     layers: Vec<Layer>,
 }
 
 impl Network {
-    pub fn random<R: RngCore>(rng: &mut R, layers: &[LayerTopology]) -> Self {
+    pub fn random(rng: &mut dyn RngCore, layers: &[LayerTopology]) -> Self {
         Self {
             layers: layers
                 .windows(2)
@@ -26,7 +27,7 @@ impl Network {
         }
     }
 
-    fn propagate(&self, inputs: Vec<f32>) -> Vec<f32> {
+    pub fn propagate(&self, inputs: Vec<f32>) -> Vec<f32> {
         self.layers
             .iter()
             .fold(inputs, |inputs, layer| layer.propagate(inputs))
@@ -37,12 +38,13 @@ impl Network {
 *  Layer
 *********************/
 
+#[derive(Debug)]
 struct Layer {
     neurons: Vec<Neuron>,
 }
 
 impl Layer {
-    fn random<R: RngCore>(rng: &mut R, input_neurons: usize, output_neurons: usize) -> Self {
+    fn random(rng: &mut dyn RngCore, input_neurons: usize, output_neurons: usize) -> Self {
         Self {
             neurons: (0..output_neurons)
                 .map(|_| Neuron::random(rng, input_neurons))
@@ -68,7 +70,7 @@ struct Neuron {
 }
 
 impl Neuron {
-    fn random<R: RngCore>(rng: &mut R, input_neurons: usize) -> Self {
+    fn random(rng: &mut dyn RngCore, input_neurons: usize) -> Self {
         Self {
             bias: rng.gen_range(-1.0..=1.0),
             weights: (0..input_neurons)
